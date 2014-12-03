@@ -1,6 +1,24 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block content %}
+<div class="splash">
+    <div class="pure-g-r">
+        <div class="pure-u-1">
+            <div class="l-box splash-text">
+                <h1 class="splash-head">
+                    Uma Simples Plataforma de Ensino a Distância
+                </h1>
+                <h2 class="splash-subhead">
+                    O Simple MOOC visa simplificar o ensino a distância, provendo ferramentas objetivas e de fácil uso para cursos a distância.
+                </h2>
+                <p>
+                    <a href="#" class="pure-button primary-button">Saiba mais</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="pure-g-r content-ribbon">
 	<div class="pure-u-1">
 		<div class="l-box">
@@ -13,7 +31,13 @@
 	{% for course in courses %}
 	<div class="pure-u-1-3">
 		<div class="l-box">
-			<a href=""><img src="http://placehold.it/400x250" alt="{{ course.name }}"></a>
+			<a href="">
+				{% if course.image %}
+				<img src="{{ course.image.url }}" alt="{{ course.name }}">
+				{% else %}
+				<img src="{% static 'img/course-image.png' %}" alt="{{ course.name }}">
+				{% endif %}
+			</a>
 		</div>
 	</div>
 	<div class="pure-u-2-3">
