@@ -5,10 +5,11 @@ from django.conf.urls.static import static
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^', include('simplemooc.core.urls', namespace='core')),
-    url(r'^cursos/', include('simplemooc.courses.urls',
-        namespace='courses')),
+    url(r'^cursos/', include(
+        'simplemooc.courses.urls', namespace='courses')),
     url(r'^admin/', include(admin.site.urls)),
 )
 
