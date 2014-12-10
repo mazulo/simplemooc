@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from simplemooc.courses.models import Course
 
 
@@ -8,7 +8,14 @@ def index(request):
     return render(request, template_name, {'courses': courses})
 
 
-def details(request, pk):
+# Method via pk
+# def details(request, pk):
+#     template_name = 'courses/detail.html'
+#     course = get_object_or_404(Course, pk=pk)
+#     return render(request, template_name, {'course': course})
+
+
+def details(request, slug):
     template_name = 'courses/detail.html'
-    course = Course.objects.get(pk=pk)
+    course = get_object_or_404(Course, slug=slug)
     return render(request, template_name, {'course': course})
