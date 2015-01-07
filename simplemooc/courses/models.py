@@ -44,7 +44,7 @@ class Course(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('courses:details', args=[self.slug])
+        return reverse('courses:details', args=[str(self.slug)])
 
     class Meta:
         verbose_name = 'Curso'
