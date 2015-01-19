@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'simplemooc.core',
+    'simplemooc.accounts',
     'simplemooc.courses',
 )
 
@@ -96,3 +97,8 @@ EMAIL_HOST_PASSWORD = 'patrickmazulo25'
 EMAIL_PORT = 587
 
 CONTACT_EMAIL = "pmazulo@gmail.com"
+
+#Auth
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'core:home'
+LOGOUT_URL = 'accounts:logout'
