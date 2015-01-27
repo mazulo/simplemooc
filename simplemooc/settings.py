@@ -87,8 +87,8 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'simplemooc', 'media')
 MEDIA_URL = '/media/'
 
-#E-mails
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# E-mails
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'Nome webmaster@localhost'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
@@ -98,7 +98,8 @@ EMAIL_PORT = 587
 
 CONTACT_EMAIL = "pmazulo@gmail.com"
 
-#Auth
+# Auth
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'core:home'
 LOGOUT_URL = 'accounts:logout'
+AUTH_USER_MODEL = 'accounts.User'
