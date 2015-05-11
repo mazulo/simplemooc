@@ -2,6 +2,7 @@ from django import forms
 from django.conf import settings
 from simplemooc.core.mail import send_mail_template
 
+
 class ContactCourse(forms.Form):
     name = forms.CharField(label='Nome', max_length=100)
     email = forms.EmailField(label='Email')

@@ -54,7 +54,6 @@ class RegisterForm(forms.ModelForm):
             user.save()
         return user
 
-
     class Meta:
         model = User
         fields = ['username', 'email']

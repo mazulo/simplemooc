@@ -16,6 +16,8 @@ class Course(models.Model):
     slug = models.SlugField('Atalho')
     description = models.TextField('Descrição Curta', blank=True)
     about = models.TextField('Sobre o Curso', blank=True)
+    created_at = models.DateTimeField('Criado em', auto_now_add=True)
+    uptade_at = models.DateTimeField('Atualizado em', auto_now=True)
     start_date = models.DateField(
         'Data de Início',
         null=True,
@@ -26,14 +28,6 @@ class Course(models.Model):
         verbose_name='Imagem',
         null=True,
         blank=True
-    )
-    created_at = models.DateTimeField(
-        'Criado em',
-        auto_now_add=True
-    )
-    uptade_at = models.DateTimeField(
-        'Atualizado em',
-        auto_now=True
     )
     objects = CourseManager()
 
