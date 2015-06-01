@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Simple MOOC - Uma simples plataforma de ensino a distância" />
     <title>Simple MOOC</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link rel="stylesheet" href="{% static 'css/pure-min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
 </head>
 <body>
 <div class="content">
@@ -26,6 +27,15 @@
                 <li><a href="{% url 'core:contact' %}">Contato</a></li>
             </ul>
         </div>
+    </div>
+    <div class="pure-g-r content-ribbon">
+        {% if messages %}
+            {% for message in messages %}
+                <aside class="pure-u-1">
+                    {{ message }}
+                </aside>
+            {% endfor %}
+        {% endif %}
     </div>
         {% block content %} {% endblock %}
     </div>
