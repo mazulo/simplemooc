@@ -11,6 +11,7 @@ urlpatterns = patterns(
     url(r'^cursos/', include('simplemooc.courses.urls', namespace='courses')),
     url(r'^contas/', include(
         'simplemooc.accounts.urls', namespace='accounts')),
+    url(r'^forum/', include('simplemooc.forum.urls', namespace='forum')),
     url(r'^admin/', include(admin.site.urls)),
 )
 
