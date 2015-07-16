@@ -96,7 +96,7 @@ DEFAULT_FROM_EMAIL = 'Nome webmaster@localhost'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'pmazulo@gmail.com'
-EMAIL_HOST_PASSWORD = 'patrickmazulo25'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 
 CONTACT_EMAIL = "pmazulo@gmail.com"
