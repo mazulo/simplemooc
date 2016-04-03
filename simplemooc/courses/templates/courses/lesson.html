@@ -37,11 +37,13 @@
 										<i class"fa fa-video-camera"></i>
 										Acessar
 									</a>
-								{% else %}
+								{% elif material.material_file %}
 									<a href="{{ material.material_file.url }}">
 										<i class"fa fa-download"></i>
 										Baixar
 									</a>
+								{% else %}
+									<p>Sem arquivos disponíveis até o momento.</p>
 								{% endif %}
 							</td>
 						</tr>
