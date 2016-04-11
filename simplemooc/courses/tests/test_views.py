@@ -1,15 +1,26 @@
-from django.test import TestCase
-from django.core import mail
-from django.test.client import Client
-from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core import mail
+from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.test.client import Client
+
+from simplemooc.accounts.models import Professor
 from simplemooc.courses.models import Course
 
 
 class ContactCourseTestCase(TestCase):
 
     def setUp(self):
-        self.course = Course.objects.create(name='Django', slug='django')
+        self.professor = Professor.objects.create(
+            username='mazulo',
+            email='pmazulo@gmail.com',
+            name='Patrick Mazulo',
+        )
+        self.course = Course.objects.create(
+            name='Django',
+            slug='django',
+            professor=self.professor
+        )
 
     def tearDown(self):
         self.course.delete()
@@ -40,6 +51,7 @@ class ContactCourseTestCase(TestCase):
         }
         client = Client()
         path = reverse('courses:details', args=[self.course.slug])
-        response = client.post(path, data)
+        # response = client.post(path, data)
+        client.post(path, data)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to, [settings.CONTACT_EMAIL])
