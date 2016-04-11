@@ -1,8 +1,10 @@
-from django.db import models
-from django.core.urlresolvers import reverse
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.db import models
 from django.utils import timezone
+
 from simplemooc.core.mail import send_mail_template
+from simplemooc.accounts.models import Professor
 
 
 class CourseManager(models.Manager):
@@ -15,22 +17,42 @@ class CourseManager(models.Manager):
 
 
 class Course(models.Model):
-    name = models.CharField('Nome', max_length=100)
-    slug = models.SlugField('Atalho')
-    description = models.TextField('Descrição Curta', blank=True)
-    about = models.TextField('Sobre o Curso', blank=True)
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
-    uptade_at = models.DateTimeField('Atualizado em', auto_now=True)
+    name = models.CharField(
+        'nome',
+        max_length=100
+    )
+    slug = models.SlugField('atalho')
+    description = models.TextField(
+        'descrição curta',
+        blank=True
+    )
+    about = models.TextField(
+        'sobre o curso',
+        blank=True
+    )
+    created_at = models.DateTimeField(
+        'criado em',
+        auto_now_add=True
+    )
+    uptade_at = models.DateTimeField(
+        'atualizado em',
+        auto_now=True
+    )
     start_date = models.DateField(
-        'Data de Início',
+        'data de início',
         null=True,
         blank=True
     )
     image = models.ImageField(
         upload_to='courses/images',
-        verbose_name='Imagem',
+        verbose_name='imagem',
         null=True,
         blank=True
+    )
+    professor = models.ForeignKey(
+        Professor,
+        verbose_name='professor',
+        related_name='courses'
     )
     objects = CourseManager()
 
@@ -45,21 +67,114 @@ class Course(models.Model):
         return self.lessons.filter(release_date__gte=today)
 
     class Meta:
-        verbose_name = 'Curso'
-        verbose_name_plural = 'Cursos'
+        verbose_name = 'curso'
+        verbose_name_plural = 'cursos'
         ordering = ['name']
 
 
-class Lesson(models.Model):
-    name = models.CharField('Nome', max_length=100)
-    description = models.TextField('Descrição', blank=True)
-    number = models.IntegerField('Número (ordem)', blank=True, default=0)
-    release_date = models.DateField('Data de liberação', blank=True, null=True)
-    course = models.ForeignKey(
-        Course, verbose_name='Curso', related_name='lessons'
+class CourseTRB(Course):
+
+    def __str__(self):
+        return '{}-TRB'.format(self.name)
+
+    class Meta:
+        verbose_name = 'curso Taxonomia Revisada de Bloom'
+        verbose_name_plural = 'cursos Taxonomia Revisada de Bloom'
+
+
+class KnowledgeLevel(models.Model):
+    name = models.CharField(
+        'nome',
+        max_length=100
     )
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
-    uptade_at = models.DateTimeField('Atualizado em', auto_now=True)
+    description = models.TextField(
+        'descrição',
+        blank=True
+    )
+    lessons = models.ManyToManyField(
+        'LessonTRB',
+        verbose_name='lição',
+        related_name='levels'
+    )
+
+    class Meta:
+        verbose_name = 'nível de conhecimento'
+        verbose_name_plural = 'níveis de conhecimento'
+
+
+class CategoryDimensionCognitiveProcess(models.Model):
+    name = models.CharField(
+        'nome',
+        max_length=100
+    )
+    description = models.TextField(
+        'descrição',
+        blank=True
+    )
+    lessons = models.ManyToManyField(
+        'LessonTRB',
+        verbose_name='lição',
+        related_name='categoriesdcp'
+    )
+
+    class Meta:
+        verbose_name = 'categoria da dimensão processo cognitivo'
+        verbose_name_plural = 'categorias da dimensão processo cognitivo'
+
+
+class Verb(models.Model):
+    name = models.CharField(
+        'verbo',
+        max_length=100
+    )
+    educational_goal = models.TextField(
+        'objetivo educacional',
+        blank=True,
+        null=True
+    )
+    category_dimension = models.ForeignKey(
+        CategoryDimensionCognitiveProcess,
+        verbose_name='categoria da dimensão processo cognitivo',
+        related_name='verbs'
+    )
+
+    class Meta:
+        verbose_name = 'verbo'
+        verbose_name_plural = 'verbos'
+
+
+class Lesson(models.Model):
+    name = models.CharField(
+        'nome',
+        max_length=100
+    )
+    description = models.TextField(
+        'descrição',
+        blank=True
+    )
+    number = models.IntegerField(
+        'número (ordem)',
+        blank=True,
+        default=0
+    )
+    release_date = models.DateField(
+        'data de liberação',
+        blank=True,
+        null=True
+    )
+    course = models.ForeignKey(
+        Course,
+        verbose_name='Curso',
+        related_name='lessons'
+    )
+    created_at = models.DateTimeField(
+        'criado em',
+        auto_now_add=True
+    )
+    uptade_at = models.DateTimeField(
+        'atualizado em',
+        auto_now=True
+    )
 
     def __str__(self):
         return self.name
@@ -71,20 +186,37 @@ class Lesson(models.Model):
         return False
 
     class Meta:
-        verbose_name = 'Aula'
-        verbose_name_plural = 'Aulas'
+        verbose_name = 'aula'
+        verbose_name_plural = 'aulas'
         ordering = ['number']
 
 
+class LessonTRB(Lesson):
+
+    class Meta:
+        verbose_name = 'aula curso taxonomia revisada de bloom'
+        verbose_name_plural = 'aulas curso taxonomia revisada de bloom'
+
+
 class Material(models.Model):
-    name = models.CharField('Nome', max_length=100)
-    embedded = models.TextField('Vídeo embedded', blank=True)
+    name = models.CharField(
+        'nome',
+        max_length=100
+    )
+    embedded = models.TextField(
+        'vídeo embedded',
+        blank=True
+    )
     material_file = models.FileField(
-        upload_to='lessons/material', blank=True, null=True
+        upload_to='lessons/material',
+        blank=True,
+        null=True
     )
 
     lesson = models.ForeignKey(
-        Lesson, verbose_name='aula', related_name='materiais'
+        Lesson,
+        verbose_name='aula',
+        related_name='materiais'
     )
 
     def is_embedded(self):
@@ -94,8 +226,8 @@ class Material(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Material'
-        verbose_name_plural = 'Materiais'
+        verbose_name = 'material'
+        verbose_name_plural = 'materiais'
 
 
 class Enrollment(models.Model):
@@ -113,17 +245,17 @@ class Enrollment(models.Model):
     )
     course = models.ForeignKey(
         Course,
-        verbose_name='Curso',
+        verbose_name='curso',
         related_name='enrollments'
     )
     status = models.IntegerField(
-        'Situação',
+        'situação',
         choices=STATUS_CHOICE,
         default=1,
         blank=True
     )
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
-    uptade_at = models.DateTimeField('Atualizado em', auto_now=True)
+    created_at = models.DateTimeField('criado em', auto_now_add=True)
+    uptade_at = models.DateTimeField('atualizado em', auto_now=True)
 
     def active(self):
         self.status = 1
@@ -136,43 +268,63 @@ class Enrollment(models.Model):
         return str(self.course)
 
     class Meta:
-        verbose_name = 'Inscrição'
-        verbose_name_plural = 'Inscrições'
+        verbose_name = 'inscrição'
+        verbose_name_plural = 'inscrições'
         unique_together = (('user', 'course'),)
 
 
 class Announcement(models.Model):
     course = models.ForeignKey(
-        Course, verbose_name='Curso', related_name='announcements'
+        Course,
+        verbose_name='curso',
+        related_name='announcements'
     )
-    title = models.CharField('Título', max_length=100)
-    content = models.TextField('Conteúdo')
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
-    uptade_at = models.DateTimeField('Atualizado em', auto_now=True)
+    title = models.CharField(
+        'título',
+        max_length=100
+    )
+    content = models.TextField('conteúdo')
+    created_at = models.DateTimeField(
+        'criado em',
+        auto_now_add=True
+    )
+    uptade_at = models.DateTimeField(
+        'atualizado em',
+        auto_now=True
+    )
 
     def __str__(self):
         return self.title
 
     class Meta:
-        verbose_name = 'Anúncio'
-        verbose_name_plural = 'Anúncios'
+        verbose_name = 'anúncio'
+        verbose_name_plural = 'anúncios'
         ordering = ['-created_at']
 
 
 class Comment(models.Model):
     announcement = models.ForeignKey(
         Announcement,
-        verbose_name='Anúncio',
+        verbose_name='anúncio',
         related_name='comments'
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='usuário')
-    comment = models.TextField('Comentário')
-    created_at = models.DateTimeField('Criado em', auto_now_add=True)
-    uptade_at = models.DateTimeField('Atualizado em', auto_now=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name='usuário'
+    )
+    comment = models.TextField('comentário')
+    created_at = models.DateTimeField(
+        'criado em',
+        auto_now_add=True
+    )
+    uptade_at = models.DateTimeField(
+        'atualizado em',
+        auto_now=True
+    )
 
     class Meta:
-        verbose_name = 'Comentário'
-        verbose_name_plural = 'Comentários'
+        verbose_name = 'comentário'
+        verbose_name_plural = 'comentários'
         ordering = ['created_at']
 
 
