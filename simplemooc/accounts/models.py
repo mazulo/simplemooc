@@ -67,6 +67,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Professor(User):
 
+    def __str__(self):
+        return 'Professor - {}'.format(self.get_full_name())
+
     class Meta:
         verbose_name = 'professor'
         verbose_name_plural = 'professores'
