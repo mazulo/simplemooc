@@ -60,6 +60,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         return str(self)
 
+    @property
+    def is_professor(self):
+        return hasattr(self, 'professor')
+
     class Meta:
         verbose_name = 'Usuário'
         verbose_name_plural = 'Usuários'
@@ -68,7 +72,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Professor(User):
 
     def __str__(self):
-        return 'Professor - {}'.format(self.get_full_name())
+        return 'Professor - {}'.format(self.name or self.username)
 
     class Meta:
         verbose_name = 'professor'
