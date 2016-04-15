@@ -1,9 +1,26 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import (
+    render,
+    get_object_or_404,
+    redirect
+)
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from simplemooc.courses.models import Course, Enrollment, Lesson, Material
-from simplemooc.courses.forms import ContactCourse, CommentForm
+from simplemooc.courses.models import (
+    Course,
+    Enrollment,
+    Lesson,
+    Material
+)
+from simplemooc.courses.forms import (
+    ContactCourse,
+    CommentForm,
+    LessonForm,
+    LessonTRBForm,
+    KnowledgeLevelForm,
+    CourseForm,
+    CourseTRBForm
+)
 from .decorators import enrollment_required
 
 
@@ -13,11 +30,41 @@ def index(request):
     return render(request, template_name, {'courses': courses})
 
 
-# Method via pk
-# def details(request, pk):
-#     template_name = 'courses/detail.html'
-#     course = get_object_or_404(Course, pk=pk)
-#     return render(request, template_name, {'course': course})
+@login_required
+def list_courses_trb(request):
+    template_name = 'courses/list_courses.html'
+    context = {}
+    courses = Course.course_objects.courses_trb()
+    context['courses'] = courses
+    context['is_trb'] = True
+    return render(request, template_name, context)
+
+
+@login_required
+def list_courses_normal(request):
+    template_name = 'courses/list_courses.html'
+    context = {}
+    courses = Course.course_objects.courses_normal()
+    context['courses'] = courses
+    context['is_trb'] = False
+    return render(request, template_name, context)
+
+
+@login_required
+def course(request, pk):
+    template_name = 'courses/course.html'
+    context = {}
+    course = get_object_or_404(Course, pk=pk)
+    context['course'] = course
+    return render(request, template_name, context)
+
+
+@login_required
+def edit_course(request, pk):
+    template_name = ''
+    context = {}
+    # course = get_object_or_404(Course, pk=pk)
+    return render(request, template_name, context)
 
 
 def details(request, slug):
