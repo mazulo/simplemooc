@@ -17,11 +17,13 @@
 			<a class="pure-menu-heading" href="{% url 'core:home' %}">SIMPLE MOOC</a>
 			<ul>
 				<li class="pure-menu-selected"><a href="{% url 'core:home' %}">Início</a></li>
-				<li><a href="{% url 'courses:index' %}">Cursos</a></li>
+				{% if user.is_authenticated and not user.is_professor %}
+					<li><a href="{% url 'courses:index' %}">Cursos</a></li>
+				{% endif %}
 				<li><a href="{% url 'forum:index' %}">Fórum</a></li>
 				{% if user.is_authenticated %}
 					<li><a href="{% url 'accounts:dashboard' %}">Dashboard</a></li>
-					<li><a href="{% url 'accounts:logout' %}">{{ user}} | Sair</a></li>
+					<li><a href="{% url 'accounts:logout' %}">Prof. {{ user}} | Sair</a></li>
 				{% else %}
 					<li><a href="{% url 'accounts:login' %}">Entrar</a></li>
 				{% endif %}
