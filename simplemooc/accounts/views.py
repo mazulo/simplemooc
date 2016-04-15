@@ -5,7 +5,12 @@ from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .forms import RegisterForm, EditAccountForm, PasswordResetForm
+from .forms import (
+    RegisterForm,
+    EditAccountForm,
+    PasswordResetForm,
+    RegisterProfessorForm
+)
 from .models import PasswordReset
 
 
@@ -15,7 +20,11 @@ User = get_user_model()
 def register(request):
     template_name = 'accounts/register.html'
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        is_professor = request.POST.get('is_professor', '')
+        if is_professor:
+            form = RegisterProfessorForm(request.POST)
+        else:
+            form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             user = authenticate(

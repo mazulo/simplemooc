@@ -3,7 +3,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from simplemooc.core.utils import generate_hash_key
 from simplemooc.core.mail import send_mail_template
-from simplemooc.accounts.models import PasswordReset
+from simplemooc.accounts.models import PasswordReset, Professor
 
 
 User = get_user_model()
@@ -34,7 +34,15 @@ class PasswordResetForm(forms.Form):
 
 class RegisterForm(forms.ModelForm):
 
-    password1 = forms.CharField(label='Senha', widget=forms.PasswordInput)
+    is_professor = forms.BooleanField(
+        label='Você é professor?',
+        initial=False,
+        required=False
+    )
+    password1 = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput
+    )
     password2 = forms.CharField(
         label='Confirmação de senha',
         widget=forms.PasswordInput
@@ -56,7 +64,13 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'is_professor']
+
+
+class RegisterProfessorForm(RegisterForm):
+
+    class Meta(RegisterForm.Meta):
+        model = Professor
 
 
 class EditAccountForm(forms.ModelForm):

@@ -1,7 +1,73 @@
 from django import forms
 from django.conf import settings
+
 from simplemooc.core.mail import send_mail_template
-from .models import Comment
+from .models import (
+    Comment,
+    LessonTRB,
+    Lesson,
+    KnowledgeLevel,
+    CategoryDimensionCognitiveProcess,
+    Course,
+    CourseTRB
+)
+
+
+class CourseForm(forms.ModelForm):
+
+    class Meta:
+        model = Course
+        fields = [
+            'name',
+            'slug',
+            'description',
+            'about',
+            'image',
+        ]
+
+
+class CourseTRBForm(CourseForm):
+
+    class Meta(CourseForm.Meta):
+        model = CourseTRB
+
+
+class LessonForm(forms.ModelForm):
+
+    class Meta:
+        model = Lesson
+        fields = [
+            'name',
+            'description',
+            'number',
+            'release_date',
+        ]
+
+
+class LessonTRBForm(LessonForm):
+
+    class Meta(LessonForm.Meta):
+        model = LessonTRB
+
+
+class KnowledgeLevelForm(forms.ModelForm):
+
+    class Meta:
+        model = KnowledgeLevel
+        fields = [
+            'name',
+            'description',
+        ]
+
+
+class CategoryDCPForm(forms.ModelForm):
+
+    class Meta:
+        model = CategoryDimensionCognitiveProcess
+        fields = [
+            'name',
+            'description',
+        ]
 
 
 class ContactCourse(forms.Form):

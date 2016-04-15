@@ -5,6 +5,21 @@ from simplemooc.courses import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(
+        r'^cursos/trb/$',
+        views.list_courses_trb,
+        name='list_courses_trb'
+    ),
+    url(
+        r'^cursos/normal/$',
+        views.list_courses_normal,
+        name='list_courses_normal'
+    ),
+    url(
+        r'^curso/(?P<pk>\d+)/$',
+        views.course,
+        name='course'
+    ),
+    url(
         r'^(?P<slug>[\w_-]+)/$',
         views.details,
         name='details'

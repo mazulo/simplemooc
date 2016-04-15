@@ -15,35 +15,54 @@
 	<div class="pure-u-1-3">
 		<div class="pure-menu pure-menu-open">
 			<ul>
-				<li class="pure-menu-heading">
-					Bem vindo, {{ user }}
-				</li>
-				{% block menu_options %}
-					<li class="pure-menu-heading">Meus cursos</li>
-					{% for enrollment in enrollments %}
+				{% with is_professor=user.is_professor  %}
+					<li class="pure-menu-heading">
+						{% if is_professor %}
+							Bem vindo, Professor {{ user }}
+						{% else %}
+							Bem vindo, {{ user }}
+						{% endif %}
+					</li>
+					{% block menu_options %}
+						<li class="pure-menu-heading">Meus cursos</li>
+						{% if is_professor %}
+							<li>
+								<a href="{% url 'courses:list_courses_normal' %}">
+									Cursos
+								</a>
+							</li>
+							<li>
+								<a href="{% url 'courses:list_courses_trb' %}">
+									Curso utilizando Ferramenta Pedagógica de Apoio
+								</a>
+							</li>
+						{% else %}
+							{% for enrollment in enrollments %}
+								<li>
+									<a href="{% url 'courses:announcements' enrollment.course.slug %}">
+										<i class="fa fa-book"></i>
+										{{ enrollment.course }}
+									</a>
+								</li>
+							{% empty %}
+								<li>Nenhum curso encontrado</li>
+							{% endfor %}
+						{% endif %}
+						<li class="pure-menu-heading">Conta</li>
 						<li>
-							<a href="{% url 'courses:announcements' enrollment.course.slug %}">
-								<i class="fa fa-book"></i>
-								{{ enrollment.course }}
+							<a href="{% url 'accounts:edit' %}">
+								<i class="fa fa-cog"></i>
+								Editar Informações
 							</a>
 						</li>
-					{% empty %}
-						<li>Nenhum curso encontrado</li>
-					{% endfor %}
-					<li class="pure-menu-heading">Conta</li>
-					<li>
-						<a href="{% url 'accounts:edit' %}">
-							<i class="fa fa-cog"></i>
-							Editar Informações
-						</a>
-					</li>
-					<li>
-						<a href="{% url 'accounts:edit_password' %}">
-							<i class="fa fa-lock"></i>
-							Editar Senha
-						</a>
-					</li>
-				{% endblock menu_options %}
+						<li>
+							<a href="{% url 'accounts:edit_password' %}">
+								<i class="fa fa-lock"></i>
+								Editar Senha
+							</a>
+						</li>
+					{% endblock menu_options %}
+				{% endwith %}
 			</ul>
 		</div>
 	</div>
@@ -52,25 +71,31 @@
 		<div class="inner">
 			{% block dashboard_content %}
 				<h2>Meus Cursos</h2>
-				{% for enrollment in enrollments %}				
-				<div class="well">
-					<h3>
-						{{ enrollment.course }}
-						({{ enrollment.course.start_date|date:'d/m/Y'|default:'Sem data'}})
-					</h3>
-					<p>
-						{{ enrollment.course.description|linebreaks }}
-					</p>
-					<div class="pure-controls">
-						<a href="{% url 'courses:announcements' enrollment.course.slug %}" class="pure-button pure-button-primary">Acessar</a>
-						<a href="{% url 'courses:undo_enrollment' enrollment.course.slug %}" class="pure-button button-error">Cancelar</a>
-					</div>
-				</div>
-				{% empty %}
-					<aside class="pure-u-1">
-						<p>Nenhum curso inscrito</p>
-					</aside>
-				{% endfor %}
+				{% with is_professor=user.is_professor %}				    
+					{% if is_professor %}
+						<p>Use a dashboard lateral para acessar seus cursos.</p>
+					{% else %}
+						{% for enrollment in enrollments %}				
+						<div class="well">
+							<h3>
+								{{ enrollment.course }}
+								({{ enrollment.course.start_date|date:'d/m/Y'|default:'Sem data'}})
+							</h3>
+							<p>
+								{{ enrollment.course.description|linebreaks }}
+							</p>
+							<div class="pure-controls">
+								<a href="{% url 'courses:announcements' enrollment.course.slug %}" class="pure-button pure-button-primary">Acessar</a>
+								<a href="{% url 'courses:undo_enrollment' enrollment.course.slug %}" class="pure-button button-error">Cancelar</a>
+							</div>
+						</div>
+						{% empty %}
+							<aside class="pure-u-1">
+								<p>Nenhum curso inscrito</p>
+							</aside>
+						{% endfor %}
+					{% endif %}
+				{% endwith %}
 			{% endblock dashboard_content %}
 		</div>
 		</div>

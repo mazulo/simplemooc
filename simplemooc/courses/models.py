@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 
+from .managers import KindOfCourse
 from simplemooc.core.mail import send_mail_template
 from simplemooc.accounts.models import Professor
 
@@ -55,6 +56,7 @@ class Course(models.Model):
         related_name='courses'
     )
     objects = CourseManager()
+    course_objects = KindOfCourse.as_manager()
 
     def __str__(self):
         return self.name
@@ -65,6 +67,10 @@ class Course(models.Model):
     def release_lessons(self):
         today = timezone.now().date()
         return self.lessons.filter(release_date__gte=today)
+
+    @property
+    def is_trb(self):
+        return hasattr(self, 'course_trb')
 
     class Meta:
         verbose_name = 'curso'
@@ -91,11 +97,6 @@ class KnowledgeLevel(models.Model):
         'descrição',
         blank=True
     )
-    lessons = models.ManyToManyField(
-        'LessonTRB',
-        verbose_name='lição',
-        related_name='levels'
-    )
 
     class Meta:
         verbose_name = 'nível de conhecimento'
@@ -111,11 +112,9 @@ class CategoryDimensionCognitiveProcess(models.Model):
         'descrição',
         blank=True
     )
-    lessons = models.ManyToManyField(
-        'LessonTRB',
-        verbose_name='lição',
-        related_name='categoriesdcp'
-    )
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         verbose_name = 'categoria da dimensão processo cognitivo'
@@ -137,6 +136,9 @@ class Verb(models.Model):
         verbose_name='categoria da dimensão processo cognitivo',
         related_name='verbs'
     )
+
+    def __str__(self):
+        return '{} - {}'.format(self.name, self.category_dimension)
 
     class Meta:
         verbose_name = 'verbo'
@@ -192,6 +194,17 @@ class Lesson(models.Model):
 
 
 class LessonTRB(Lesson):
+
+    category_dimension = models.ManyToManyField(
+        CategoryDimensionCognitiveProcess,
+        verbose_name='categoria processo cognitivo',
+        related_name='lessons'
+    )
+    levels = models.ManyToManyField(
+        KnowledgeLevel,
+        verbose_name='levels',
+        related_name='lessons'
+    )
 
     class Meta:
         verbose_name = 'aula curso taxonomia revisada de bloom'
