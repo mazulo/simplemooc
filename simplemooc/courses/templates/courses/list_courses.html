@@ -1,0 +1,35 @@
+{% extends "courses/course_dashboard.html" %}
+
+{% block breadcrumb %}
+    {{ block.super }}
+    <li>/</li>
+    <li><a href="{% url 'accounts:dashboard' course.slug %}">Dashboard</a></li>
+{% endblock breadcrumb %}
+
+{% block content %}
+    <div class="well">
+        {% if not is_trb %}
+            <h1>Cursos</h1>
+        {% else %}
+            <h1>Cursos utilizando Ferramenta Pedagógica de Apoio</h1>
+        {% endif %}
+        <ul>
+        {% for course in courses %}
+            <li>
+                <h3>
+                    <a href="{% url 'courses:course' course.pk %}">{{ course }}</a>
+                </h3>
+                <p>
+                    {{ course.description|truncatewords:'20'}}
+                </p>
+            </li>
+        {% empty %}
+            <div class="well">
+                <h2>
+                    Nenhuma curso disponível.
+                </h2>
+            </div>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}
