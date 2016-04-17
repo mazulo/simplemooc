@@ -98,6 +98,9 @@ class KnowledgeLevel(models.Model):
         blank=True
     )
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'nível de conhecimento'
         verbose_name_plural = 'níveis de conhecimento'
