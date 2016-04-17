@@ -11,6 +11,7 @@ from .models import (
     Course,
     CourseTRB
 )
+from .custom_widgets import DateInputType
 
 
 class CourseForm(forms.ModelForm):
@@ -42,6 +43,9 @@ class LessonForm(forms.ModelForm):
             'number',
             'release_date',
         ]
+        widgets = {
+            'release_date': DateInputType(),
+        }
 
 
 class LessonTRBForm(LessonForm):
