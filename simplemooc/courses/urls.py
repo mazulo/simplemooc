@@ -20,6 +20,11 @@ urlpatterns = [
         name='course'
     ),
     url(
+        r'^curso/(?P<pk>\d+)/create_lesson/$',
+        views.create_lesson_trb,
+        name='create_lesson_trb'
+    ),
+    url(
         r'^(?P<slug>[\w_-]+)/$',
         views.details,
         name='details'
