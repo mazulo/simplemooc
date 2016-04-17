@@ -85,6 +85,26 @@ def details(request, slug):
 
 
 @login_required
+def create_lesson_trb(request, pk):
+    template_name = 'courses/create_lesson.html'
+    context = {}
+    course = get_object_or_404(Course, pk=pk)
+    course = course.coursetrb
+    if request.method == 'POST':
+        form = LessonTRBForm(request.POST)
+        if form.is_valid():
+            lesson = form.save(commit=False)
+            lesson.course = course
+            lesson.save()
+            return redirect('courses:course', pk=pk)
+    else:
+        form = LessonTRBForm()
+    context['form'] = form
+    context['course'] = course
+    return render(request, template_name, context)
+
+
+@login_required
 def enrollment(request, slug):
     course = get_object_or_404(Course, slug=slug)
     enrollment, created = Enrollment.objects.get_or_create(
