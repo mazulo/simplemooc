@@ -25,6 +25,16 @@ urlpatterns = [
         name='create_lesson_trb'
     ),
     url(
+        r'^curso/(?P<pk>\d+)/lesson/(?P<lesson_pk>\d+)/$',
+        views.view_lesson,
+        name='view_lesson'
+    ),
+    url(
+        r'^curso/(?P<pk>\d+)/lesson/(?P<lesson_pk>\d+)/nivel-conhecimento/$',
+        views.add_knowledge_level,
+        name='add_knowledge_level'
+    ),
+    url(
         r'^(?P<slug>[\w_-]+)/$',
         views.details,
         name='details'
