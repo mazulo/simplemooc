@@ -105,6 +105,51 @@ def create_lesson_trb(request, pk):
 
 
 @login_required
+def view_lesson(request, pk, lesson_pk):
+    context = {}
+    template_name = 'courses/view_lesson.html'
+
+    lesson = get_object_or_404(Lesson, pk=lesson_pk)
+    if hasattr(lesson, 'lessontrb'):
+        lesson = lesson.lessontrb
+
+    course = get_object_or_404(Course, pk=pk)
+    if hasattr(course, 'coursetrb'):
+        course = course.coursetrb
+
+    context['lesson'] = lesson
+    context['course'] = course
+
+    return render(request, template_name, context)
+
+
+@login_required
+def add_knowledge_level(request, pk, lesson_pk):
+    context = {}
+    template_name = 'courses/add_knowledge_level.html'
+
+    lesson = get_object_or_404(Lesson, pk=lesson_pk)
+    if hasattr(lesson, 'lessontrb'):
+        lesson = lesson.lessontrb
+
+    course = get_object_or_404(Course, pk=pk)
+    if hasattr(course, 'coursetrb'):
+        course = course.coursetrb
+
+    if request.method == 'POST':
+        form = KnowledgeLevelForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = KnowledgeLevelForm()
+    context['form'] = form
+    context['lesson'] = lesson
+    context['course'] = course
+
+    return render(request, template_name, context)
+
+
+@login_required
 def enrollment(request, slug):
     course = get_object_or_404(Course, slug=slug)
     enrollment, created = Enrollment.objects.get_or_create(
