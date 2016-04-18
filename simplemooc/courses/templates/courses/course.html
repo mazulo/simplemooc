@@ -31,7 +31,7 @@
             <ul>
                 {% for lesson in course.lessons.all %}
                     <li>
-                        <a href="#">{{ lesson }}</a>
+                        <a href="{% url 'courses:view_lesson' course.pk lesson.pk %}">{{ lesson }}</a>
                         <ul>
                             <li>
                                 {{ lesson.description }}
