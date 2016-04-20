@@ -1,0 +1,97 @@
+{% for lesson in lessons %}
+    <details>
+        <summary>
+            {% if is_normal_course %}
+                <a href="{% url 'courses:view_lesson' course.pk lesson.pk %}">{{ lesson }}</a>
+            {% else %}
+            <a href="{% url 'courses:view_lesson_trb' course.pk lesson.pk %}">{{ lesson }}</a>
+            | <a href="{% url 'courses:get_trb_table' course.pk lesson.pk %}">Visualizar tabela de apoio</a>
+            {% endif %}
+        </summary>
+        <p>
+            <p>{{ lesson.description }}</p>
+            {% if not is_normal_course %}
+                <ul>
+                    <li>
+                        <ul>
+                        {% with levels=lesson.levels.all  %}
+                            <p><strong>Níveis de conhecimento</strong></p>
+                            {% if levels %}
+                                {% for level in levels %}
+                                    <li>
+                                        {{ level.name }} | <a href="{% url 'courses:delete_knowledge_level' course.pk level.pk %}">Apagar</a> | <a href="{% url 'courses:add_knowledge_level' course.pk lesson.pk %}">Adicionar novo nível</a>
+                                        {% if level.description %}
+                                            <p>{{ level.description }}</p>
+                                        {% else %}
+                                            <p>
+                                                Sem descrição.
+                                                Adicione <a href="#">clicando aqui.</a>
+                                            </p>
+                                        {% endif %}
+                                    </li>
+                                    <ul>
+                                        {% with categories=lesson.categories_dimension.all  %}
+                                            <p>
+                                                <strong>Categorias do processo cognitivo</strong>
+                                                | <a href="{% url 'courses:add_category_cognitive' course.pk lesson.pk level.pk %}">Adicionar nova categoria</a>
+                                            </p>
+                                            {% if categories %}
+                                                {% for category in categories %}
+                                                    <li>{{ category.name }} | <a href="{% url 'courses:delete_category_cognitive' course.pk category.pk %}">Apagar</a></li>
+                                                    <ul>
+                                                        <li>
+                                                            {% if category.description %}
+                                                                {{ category.description }}
+                                                            {% else %}
+                                                                <p>
+                                                                    Sem descrição.
+                                                                    Adicione <a href="{% url 'courses:add_category_cognitive' course.pk lesson.pk level.pk %}">clicando aqui.</a>
+                                                                </p>
+                                                            {% endif %}
+                                                        </li>
+                                                        {% with verbs=category.verbs.all  %}
+                                                            {% if verbs %}
+                                                                <p>Verbos relacionados a esta categoria</p>
+                                                                <ul>
+                                                                    {% for verb in category.verbs.all %}
+                                                                        <li>
+                                                                            {{ verb.name }} 
+                                                                            | <a href="{% url 'courses:edit_verb_description' course.pk verb.pk category.pk %}">Editar</a>
+                                                                            | <a href="{% url 'courses:delete_verb_description' course.pk verb.pk %}">Apagar</a>
+                                                                        </li>
+                                                                        <ul>
+                                                                            <li>{{ verb.educational_goal }}</li>
+                                                                        </ul>
+                                                                    {% endfor %}
+                                                                    <a href="{% url 'courses:add_verb_description' course.pk lesson.pk category.pk %}">Cadastrar outro verbo</a>
+                                                                </ul>
+                                                            {% else %}
+                                                                <p>
+                                                                    Nenhum verbo relacionado.
+                                                                    <a href="{% url 'courses:add_verb_description' course.pk lesson.pk category.pk %}">Cadastrar verbo</a>
+                                                                </p>
+                                                            {% endif %}
+                                                        {% endwith %}
+                                                    </ul>
+                                                {% endfor %}
+                                            {% else %}
+                                                <li>
+                                                    Sem categorias cadastradas.
+                                                </li>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </ul>
+                                {% endfor %}
+                            {% else %}
+                                <li>
+                                    Sem níveis cadastrados. Adicione <a href="{% url 'courses:add_knowledge_level' course.pk lesson.pk %}">clicando aqui.</a>
+                                </li>
+                            {% endif %}
+                        {% endwith %}
+                        </ul>
+                    </li>
+                </ul>
+            {% endif %}
+        </p>
+    </details>
+{% endfor %}

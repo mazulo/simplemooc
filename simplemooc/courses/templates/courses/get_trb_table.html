@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+<div class="splash">
+    <div class="pure-g-r">
+        <div class="pure-u-1">
+            <div class="l-box splash-text">
+                <h1 class="splash-head">
+                    {{ course.name }}
+                </h1>
+                <h2 class="splash-subhead">
+                    {{ course.description }}
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="content-ribbon">
+    <div class="pure-u-2-3">
+        <div class="l-box">
+            <h4 class="content-subhead">Sobre o Curso</h4>
+            {{ course.about|linebreaks }}
+        </div>
+        <h4>Visualizar tabela de apoio pedagógico - {{ lesson }}</h4>
+        <p>
+           <strong>Descrição:</strong> {{ lesson.description }}
+        </p>
+        <div class="l-box">
+            <table id="table-trb" class="pure-table pure-table-bordered">
+                <thead>
+                    <tr>
+                        <th class="knowledge_level">
+                            Dimensão conhecimento
+                        </th>
+                        <th>
+                            Dimensão Processo Cognitivo
+                            <table>
+                                <tr>
+                                    <th class="dpc">Lembrar</th>
+                                    <th class="dpc">Entender</th>
+                                    <th class="dpc">Aplicar</th>
+                                    <th class="dpc">Analisar</th>
+                                    <th class="dpc">Avaliar</th>
+                                    <th class="dpc">Criar</th>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <table class="pure-table pure-table-bordered">
+                            <tr>
+                                <td class="knowledge_level">Efetivo/Factual</td>
+                                <td class="educational_goal">{{ efetivo_factual_lembrar }}</td>
+                                <td class="educational_goal">{{ efetivo_factual_entender }}</td>
+                                <td class="educational_goal">{{ efetivo_factual_aplicar }}</td>
+                                <td class="educational_goal">{{ efetivo_factual_analisar }}</td>
+                                <td class="educational_goal">{{ efetivo_factual_avaliar }}</td>
+                                <td class="educational_goal">{{ efetivo_factual_criar }}</td>
+                            </tr>
+                            <tr>
+                                <td class="knowledge_level">Conceitual</td>
+                                <td class="educational_goal">{{ conceitual_lembrar }}</td>
+                                <td class="educational_goal">{{ conceitual_entender }}</td>
+                                <td class="educational_goal">{{ conceitual_aplicar }}</td>
+                                <td class="educational_goal">{{ conceitual_analisar }}</td>
+                                <td class="educational_goal">{{ conceitual_avaliar }}</td>
+                                <td class="educational_goal">{{ conceitual_criar }}</td>
+                            </tr>
+                            <tr>
+                                <td class="knowledge_level">Procedural</td>
+                                <td class="educational_goal">{{ procedural_lembrar }}</td>
+                                <td class="educational_goal">{{ procedural_entender }}</td>
+                                <td class="educational_goal">{{ procedural_aplicar }}</td>
+                                <td class="educational_goal">{{ procedural_analisar }}</td>
+                                <td class="educational_goal">{{ procedural_avaliar }}</td>
+                                <td class="educational_goal">{{ procedural_criar }}</td>
+                            </tr>
+                            <tr>
+                                <td class="knowledge_level">Metacognitivo</td>
+                                <td class="educational_goal">{{ metacognitivo_lembrar }}</td>
+                                <td class="educational_goal">{{ metacognitivo_entender }}</td>
+                                <td class="educational_goal">{{ metacognitivo_aplicar }}</td>
+                                <td class="educational_goal">{{ metacognitivo_analisar }}</td>
+                                <td class="educational_goal">{{ metacognitivo_avaliar }}</td>
+                                <td class="educational_goal">{{ metacognitivo_criar }}</td>
+                            </tr>
+                        </table>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="pure-u-1-3">
+        <div class="l-box">
+            <ul>
+                {% for verb in verbs %}
+                    <li>{{ verb.educational_goal|slice:"0:3" }}</li>
+                    <ul>
+                        <li>{{ verb.educational_goal|slice:"3:" }}</li>
+                    </ul>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -25,21 +25,18 @@
         </div>
         <h4>Adicionar aula</h4>
         <p>
-            <a href="{% url 'courses:create_lesson_trb' course.pk %}" title="" class="pure-button">Adicionar</a>
+            {% if course.is_normal_course %}
+                <a href="{% url 'courses:create_lesson' course.pk %}" title="" class="pure-button">Adicionar</a>
+            {% else %}
+                <a href="{% url 'courses:create_lesson_trb' course.pk %}" title="" class="pure-button">Adicionar</a>
+            {% endif %}
         </p>
         <div class="l-box">
-            <ul>
-                {% for lesson in course.lessons.all %}
-                    <li>
-                        <a href="{% url 'courses:view_lesson' course.pk lesson.pk %}">{{ lesson }}</a>
-                        <ul>
-                            <li>
-                                {{ lesson.description }}
-                            </li>
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% if course.is_normal_course %}
+                {% include 'courses/list_lessons.html' with is_normal_course=course.is_normal_course lessons=course.lessons.all %}
+            {% else %}
+                {% include 'courses/list_lessons.html' with is_normal_course=course.is_normal_course lessons=course.lessonstrb.all %}
+            {% endif %}
         </div>
     </div>
     <div class="pure-u-1-3">
