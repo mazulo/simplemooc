@@ -1,101 +1,124 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils import timezone
 
-from .managers import KindOfCourse
 from simplemooc.core.mail import send_mail_template
+
 from simplemooc.accounts.models import Professor
 
+from .base_models.base import (
+    BaseCourse,
+    BaseLesson,
+    BaseCategoryCognitiveProcess,
+    BaseKnowledgeLevel,
+    BaseMaterial,
+)
 
-class CourseManager(models.Manager):
 
-    def search(self, query):
-        return self.get_queryset().filter(
-            models.Q(name__icontains=query) |
-            models.Q(description__icontains=query)
-        )
-
-
-class Course(models.Model):
-    name = models.CharField(
-        'nome',
-        max_length=100
-    )
-    slug = models.SlugField('atalho')
-    description = models.TextField(
-        'descrição curta',
-        blank=True
-    )
-    about = models.TextField(
-        'sobre o curso',
-        blank=True
-    )
-    created_at = models.DateTimeField(
-        'criado em',
-        auto_now_add=True
-    )
-    uptade_at = models.DateTimeField(
-        'atualizado em',
-        auto_now=True
-    )
-    start_date = models.DateField(
-        'data de início',
-        null=True,
-        blank=True
-    )
-    image = models.ImageField(
-        upload_to='courses/images',
-        verbose_name='imagem',
-        null=True,
-        blank=True
-    )
-    professor = models.ForeignKey(
-        Professor,
-        verbose_name='professor',
-        related_name='courses'
-    )
-    objects = CourseManager()
-    course_objects = KindOfCourse.as_manager()
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return reverse('courses:details', args=[str(self.slug)])
-
-    def release_lessons(self):
-        today = timezone.now().date()
-        return self.lessons.filter(release_date__gte=today)
-
-    @property
-    def is_trb(self):
-        return hasattr(self, 'course_trb')
+class Course(BaseCourse):
 
     class Meta:
         verbose_name = 'curso'
         verbose_name_plural = 'cursos'
         ordering = ['name']
 
+    @property
+    def is_normal_course(self):
+        return True
 
-class CourseTRB(Course):
 
-    def __str__(self):
-        return '{}-TRB'.format(self.name)
+class CourseTRB(BaseCourse):
 
     class Meta:
         verbose_name = 'curso Taxonomia Revisada de Bloom'
         verbose_name_plural = 'cursos Taxonomia Revisada de Bloom'
 
+    def __str__(self):
+        return '{}'.format(self.name)
 
-class KnowledgeLevel(models.Model):
+    @property
+    def is_normal_course(self):
+        return False
+
+
+class CourseRequest(models.Model):
+
     name = models.CharField(
-        'nome',
-        max_length=100
+        'nome do curso',
+        max_length=150,
     )
     description = models.TextField(
-        'descrição',
+        'descrição curta',
         blank=True
+    )
+    start_date = models.DateField(
+        'Data de início do curso',
+        null=True,
+        blank=True,
+    )
+    professor = models.ForeignKey(
+        Professor,
+        verbose_name='professor',
+        related_name='course_requests'
+    )
+    is_trb = models.BooleanField(
+        'Curso usará ferramentas pedagógicas de apoio?',
+        default=False
+    )
+    date_requested = models.DateTimeField(
+        'Data da requisição',
+        auto_now_add=True,
+    )
+
+    class Meta:
+        verbose_name = "requisição de curso"
+        verbose_name_plural = "requisições de cursos"
+
+    def __str__(self):
+        return self.name
+
+
+class Lesson(BaseLesson):
+    course = models.ForeignKey(
+        Course,
+        verbose_name='Curso',
+        related_name='lessons'
+    )
+
+    class Meta:
+        verbose_name = 'aula'
+        verbose_name_plural = 'aulas'
+        ordering = ['number']
+
+
+class LessonTRB(BaseLesson):
+
+    course = models.ForeignKey(
+        CourseTRB,
+        verbose_name='curso utilizando Ferramenta Pedagógica de Apoio',
+        related_name='lessonstrb'
+    )
+
+    class Meta:
+        verbose_name = 'aula curso taxonomia revisada de bloom'
+        verbose_name_plural = 'aulas curso taxonomia revisada de bloom'
+
+
+class ChooseKnowledgeLevel(BaseKnowledgeLevel):
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'escolha nível de conhecimento'
+        verbose_name_plural = 'escolhas níveis de conhecimento'
+
+
+class KnowledgeLevel(BaseKnowledgeLevel):
+
+    lesson = models.ForeignKey(
+        LessonTRB,
+        verbose_name='lição',
+        related_name='levels'
     )
 
     def __str__(self):
@@ -106,14 +129,25 @@ class KnowledgeLevel(models.Model):
         verbose_name_plural = 'níveis de conhecimento'
 
 
-class CategoryDimensionCognitiveProcess(models.Model):
-    name = models.CharField(
-        'nome',
-        max_length=100
+class ChooseCategoryCognitiveProcess(BaseCategoryCognitiveProcess):
+
+    class Meta:
+        verbose_name = 'escolha da categoria da dimensão processo cognitivo'
+        verbose_name_plural = 'escolhas das categorias da dimensão\
+        processo cognitivo'
+
+
+class CategoryCognitiveProcess(BaseCategoryCognitiveProcess):
+
+    lesson = models.ForeignKey(
+        LessonTRB,
+        verbose_name='lição',
+        related_name='categories_dimension'
     )
-    description = models.TextField(
-        'descrição',
-        blank=True
+    level = models.ForeignKey(
+        KnowledgeLevel,
+        verbose_name='nível de conhecimento',
+        related_name='categories_dimension'
     )
 
     def __str__(self):
@@ -125,6 +159,48 @@ class CategoryDimensionCognitiveProcess(models.Model):
 
 
 class Verb(models.Model):
+
+    CRIAR = (
+        ('produzir', 'produzir'),
+        ('planejar', 'planejar'),
+        ('gerar', 'gerar'),
+    )
+    AVALIAR = (
+        ('criticar', 'criticar'),
+        ('verificar', 'verificar'),
+    )
+    ANALISAR = (
+        ('atribuir', 'atribuir'),
+        ('organizar', 'organizar'),
+        ('diferenciar', 'diferenciar'),
+    )
+    APLICAR = (
+        ('implementar', 'implementar'),
+        ('executar', 'executar'),
+    )
+    ENTENDER = (
+        ('explicar', 'explicar'),
+        ('comparar', 'comparar'),
+        ('inferir', 'inferir'),
+        ('resumir', 'resumir'),
+        ('classificar', 'classificar'),
+        ('exemplificar', 'exemplificar'),
+        ('interpretar', 'interpretar'),
+    )
+    LEMBRAR = (
+        ('recordar', 'recordar'),
+        ('reconhecer', 'reconhecer'),
+    )
+
+    VERBS = {
+        'criar': CRIAR,
+        'avaliar': AVALIAR,
+        'analisar': ANALISAR,
+        'aplicar': APLICAR,
+        'entender': ENTENDER,
+        'lembrar': LEMBRAR,
+    }
+
     name = models.CharField(
         'verbo',
         max_length=100
@@ -135,7 +211,7 @@ class Verb(models.Model):
         null=True
     )
     category_dimension = models.ForeignKey(
-        CategoryDimensionCognitiveProcess,
+        CategoryCognitiveProcess,
         verbose_name='categoria da dimensão processo cognitivo',
         related_name='verbs'
     )
@@ -148,86 +224,7 @@ class Verb(models.Model):
         verbose_name_plural = 'verbos'
 
 
-class Lesson(models.Model):
-    name = models.CharField(
-        'nome',
-        max_length=100
-    )
-    description = models.TextField(
-        'descrição',
-        blank=True
-    )
-    number = models.IntegerField(
-        'número (ordem)',
-        blank=True,
-        default=0
-    )
-    release_date = models.DateField(
-        'data de liberação',
-        blank=True,
-        null=True
-    )
-    course = models.ForeignKey(
-        Course,
-        verbose_name='Curso',
-        related_name='lessons'
-    )
-    created_at = models.DateTimeField(
-        'criado em',
-        auto_now_add=True
-    )
-    uptade_at = models.DateTimeField(
-        'atualizado em',
-        auto_now=True
-    )
-
-    def __str__(self):
-        return self.name
-
-    def is_available(self):
-        if self.release_date:
-            today = timezone.now().date()
-            return self.release_date >= today
-        return False
-
-    class Meta:
-        verbose_name = 'aula'
-        verbose_name_plural = 'aulas'
-        ordering = ['number']
-
-
-class LessonTRB(Lesson):
-
-    category_dimension = models.ManyToManyField(
-        CategoryDimensionCognitiveProcess,
-        verbose_name='categoria processo cognitivo',
-        related_name='lessons'
-    )
-    levels = models.ManyToManyField(
-        KnowledgeLevel,
-        verbose_name='levels',
-        related_name='lessons'
-    )
-
-    class Meta:
-        verbose_name = 'aula curso taxonomia revisada de bloom'
-        verbose_name_plural = 'aulas curso taxonomia revisada de bloom'
-
-
-class Material(models.Model):
-    name = models.CharField(
-        'nome',
-        max_length=100
-    )
-    embedded = models.TextField(
-        'vídeo embedded',
-        blank=True
-    )
-    material_file = models.FileField(
-        upload_to='lessons/material',
-        blank=True,
-        null=True
-    )
+class Material(BaseMaterial):
 
     lesson = models.ForeignKey(
         Lesson,
@@ -235,11 +232,18 @@ class Material(models.Model):
         related_name='materiais'
     )
 
-    def is_embedded(self):
-        return bool(self.embedded)
+    class Meta:
+        verbose_name = 'material'
+        verbose_name_plural = 'materiais'
 
-    def __str__(self):
-        return self.name
+
+class MaterialTRB(BaseMaterial):
+
+    lesson = models.ForeignKey(
+        LessonTRB,
+        verbose_name='aula',
+        related_name='materiais'
+    )
 
     class Meta:
         verbose_name = 'material'
