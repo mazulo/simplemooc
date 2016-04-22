@@ -379,3 +379,22 @@ aside a, aside a:visited {
 .hidden {
   display: none;
 }
+
+table#table-trb thead {
+  padding-top: 1px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.knowledge_level {
+  width: 90px;
+  padding: 0 7px;
+}
+
+.educational_goal {
+  width: 110px;
+}
+.dpc {
+  width: 105px;
+  padding: 0 !important;
+}
