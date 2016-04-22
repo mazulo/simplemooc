@@ -28,12 +28,17 @@
 						{% if is_professor %}
 							<li>
 								<a href="{% url 'courses:list_courses_normal' %}">
-									Cursos
+									Meus Cursos
 								</a>
 							</li>
 							<li>
 								<a href="{% url 'courses:list_courses_trb' %}">
-									Curso utilizando Ferramenta Pedagógica de Apoio
+									Meus Cursos utilizando Ferramenta Pedagógica de Apoio
+								</a>
+							</li>
+							<li>
+								<a href="{% url 'courses:create_course_request' %}">
+									Enviar solicitação de criação de curso
 								</a>
 							</li>
 						{% else %}
