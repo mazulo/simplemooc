@@ -5,6 +5,11 @@ from simplemooc.courses import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(
+        r'^solicitar-curso/$',
+        views.create_course_request,
+        name='create_course_request'
+    ),
+    url(
         r'^cursos/trb/$',
         views.list_courses_trb,
         name='list_courses_trb'
@@ -20,19 +25,89 @@ urlpatterns = [
         name='course'
     ),
     url(
-        r'^curso/(?P<pk>\d+)/create_lesson/$',
+        r'^curso/(?P<pk>\d+)/criar-licao/$',
+        views.create_lesson,
+        name='create_lesson'
+    ),
+    url(
+        r'^curso/(?P<pk>\d+)/licao/(?P<lesson_pk>\d+)/$',
+        views.view_lesson,
+        name='view_lesson'
+    ),
+    url(
+        r'^curso/(?P<pk>\d+)/editar-licao/(?P<lesson_pk>\d+)$',
+        views.edit_lesson,
+        name='edit_lesson'
+    ),
+    url(
+        r'^curso/(?P<c_pk>\d+)/licao/(?P<l_pk>\d+)/add-material$',
+        views.create_material_lesson,
+        name='create_material_lesson'
+    ),
+    url(
+        r'^curso-trb/(?P<pk>\d+)/$',
+        views.course_trb,
+        name='course_trb'
+    ),
+    url(
+        r'^curso/(?P<pk>\d+)/criar-licao-trb/$',
         views.create_lesson_trb,
         name='create_lesson_trb'
     ),
     url(
-        r'^curso/(?P<pk>\d+)/lesson/(?P<lesson_pk>\d+)/$',
-        views.view_lesson,
-        name='view_lesson'
+        r'^curso/(?P<pk>\d+)/editar-licao-trb/(?P<lesson_pk>\d+)$',
+        views.edit_lesson_trb,
+        name='edit_lesson_trb'
+    ),
+    url(
+        r'^curso/(?P<c_pk>\d+)/licao-trb/(?P<l_pk>\d+)/add-material$',
+        views.create_material_lesson_trb,
+        name='create_material_lesson_trb'
+    ),
+    url(
+        r'^curso/(?P<pk>\d+)/licao-trb/(?P<lesson_pk>\d+)/$',
+        views.view_lesson_trb,
+        name='view_lesson_trb'
     ),
     url(
         r'^curso/(?P<pk>\d+)/lesson/(?P<lesson_pk>\d+)/nivel-conhecimento/$',
         views.add_knowledge_level,
         name='add_knowledge_level'
+    ),
+    url(
+        r'^curso-trb/(?P<c_pk>\d+)/nivel-conhecimento/(?P<n_pk>\d+)/$',
+        views.delete_knowledge_level,
+        name='delete_knowledge_level'
+    ),
+    url(
+        r'^curso-trb/(?P<course_pk>\d+)/lesson/(?P<lesson_pk>\d+)/add-descricao-verbo/(?P<cat_pk>\d+)/$',
+        views.add_verb_description,
+        name='add_verb_description'
+    ),
+    url(
+        r'^curso-trb/(?P<c_pk>\d+)/editar-descricao/(?P<v_pk>\d+)/categoria/(?P<cat_pk>\d+)/$',
+        views.edit_verb_description,
+        name='edit_verb_description'
+    ),
+    url(
+        r'^curso-trb/(?P<c_pk>\d+)/deletar-descricao/(?P<v_pk>\d+)/$',
+        views.delete_verb_description,
+        name='delete_verb_description'
+    ),
+    url(
+        r'^curso-trb/(?P<c_pk>\d+)/lesson/(?P<l_pk>\d+)/add-categoria-processo-cognitivo/(?P<n_pk>\d+)$',
+        views.add_category_cognitive,
+        name='add_category_cognitive'
+    ),
+    url(
+        r'^curso-trb/(?P<c_pk>\d+)/deletar-categoria-processo-cognitivo/(?P<cat_pk>\d+)$',
+        views.delete_category_cognitive,
+        name='delete_category_cognitive'
+    ),
+    url(
+        r'^curso-trb/(?P<c_pk>\d+)/lesson/(?P<l_pk>\d+)/visualizar-tabela/$',
+        views.get_trb_table,
+        name='get_trb_table'
     ),
     url(
         r'^(?P<slug>[\w_-]+)/$',
