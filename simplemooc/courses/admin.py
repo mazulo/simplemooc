@@ -4,6 +4,7 @@ from django.contrib import admin
 from .models import (
     Course,
     CourseTRB,
+    CourseRequest,
     Announcement,
     Comment,
     Enrollment,
@@ -11,7 +12,9 @@ from .models import (
     LessonTRB,
     Material,
     KnowledgeLevel,
-    CategoryDimensionCognitiveProcess,
+    ChooseKnowledgeLevel,
+    ChooseCategoryCognitiveProcess,
+    CategoryCognitiveProcess,
     Verb,
 )
 
@@ -26,9 +29,9 @@ class CourseTRBAdmin(CourseAdmin):
     pass
 
 
-class MaterialInlineAdmin(admin.StackedInline):
-
-    model = Material
+class CourseRequestAdmin(admin.ModelAdmin):
+    list_display = ['name', 'description', 'start_date', 'professor', 'is_trb']
+    search_fields = ['name', 'professor']
 
 
 class LessonAdmin(admin.ModelAdmin):
@@ -36,16 +39,15 @@ class LessonAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description']
     list_filter = ['created_at']
 
-    inlines = [
-        MaterialInlineAdmin
-    ]
-
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseTRB, CourseTRBAdmin)
+admin.site.register(CourseRequest, CourseRequestAdmin)
 admin.site.register([Enrollment, Announcement, Comment, Material])
 admin.site.register(Lesson, LessonAdmin)
 admin.site.register(LessonTRB, LessonAdmin)
 admin.site.register(KnowledgeLevel)
-admin.site.register(CategoryDimensionCognitiveProcess)
+admin.site.register(ChooseKnowledgeLevel)
+admin.site.register(CategoryCognitiveProcess)
+admin.site.register(ChooseCategoryCognitiveProcess)
 admin.site.register(Verb)
