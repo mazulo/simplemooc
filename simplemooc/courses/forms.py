@@ -2,14 +2,21 @@ from django import forms
 from django.conf import settings
 
 from simplemooc.core.mail import send_mail_template
+
 from .models import (
+    CategoryCognitiveProcess,
+    ChooseCategoryCognitiveProcess,
+    ChooseKnowledgeLevel,
     Comment,
-    LessonTRB,
-    Lesson,
-    KnowledgeLevel,
-    CategoryDimensionCognitiveProcess,
     Course,
-    CourseTRB
+    CourseTRB,
+    CourseRequest,
+    KnowledgeLevel,
+    Lesson,
+    LessonTRB,
+    Verb,
+    Material,
+    MaterialTRB,
 )
 from .custom_widgets import DateInputType
 
@@ -27,10 +34,32 @@ class CourseForm(forms.ModelForm):
         ]
 
 
-class CourseTRBForm(CourseForm):
+class CourseTRBForm(forms.ModelForm):
 
     class Meta(CourseForm.Meta):
         model = CourseTRB
+        fields = [
+            'name',
+            'slug',
+            'description',
+            'about',
+            'image',
+        ]
+
+
+class CourseRequestForm(forms.ModelForm):
+
+    class Meta:
+        model = CourseRequest
+        fields = [
+            'name',
+            'description',
+            'start_date',
+            'is_trb',
+        ]
+        widgets = {
+            'start_date': DateInputType(),
+        }
 
 
 class LessonForm(forms.ModelForm):
@@ -48,10 +77,25 @@ class LessonForm(forms.ModelForm):
         }
 
 
-class LessonTRBForm(LessonForm):
+class LessonTRBForm(forms.ModelForm):
 
-    class Meta(LessonForm.Meta):
+    levels = forms.ModelMultipleChoiceField(
+        queryset=ChooseKnowledgeLevel.objects.all(),
+        label='níveis de conhecimento',
+        help_text='para selecionar mais de 1, segure ctrl e clique no item'
+    )
+
+    class Meta:
         model = LessonTRB
+        fields = [
+            'name',
+            'description',
+            'number',
+            'release_date',
+        ]
+        widgets = {
+            'release_date': DateInputType(),
+        }
 
 
 class KnowledgeLevelForm(forms.ModelForm):
@@ -64,13 +108,88 @@ class KnowledgeLevelForm(forms.ModelForm):
         ]
 
 
+class AssignKnowledgeLevelForm(forms.Form):
+    name = forms.ChoiceField(
+        choices=[(c.name, c.name) for c in ChooseKnowledgeLevel.objects.all()],
+        label='nome'
+    )
+    description = forms.CharField(
+        label='descrição',
+        widget=forms.Textarea
+    )
+
+
 class CategoryDCPForm(forms.ModelForm):
 
     class Meta:
-        model = CategoryDimensionCognitiveProcess
+        model = CategoryCognitiveProcess
         fields = [
             'name',
             'description',
+        ]
+
+
+class VerbForm(forms.ModelForm):
+
+    class Meta:
+        model = Verb
+        fields = [
+            'name',
+            'educational_goal',
+        ]
+
+
+class VerbFormChoices(forms.ModelForm):
+
+    def __init__(self, choices, *args, **kwargs):
+        super(VerbFormChoices, self).__init__(*args, **kwargs)
+        self.fields['name'] = forms.ChoiceField(
+            choices=choices,
+            label='verbo'
+        )
+
+    class Meta:
+        model = Verb
+        fields = [
+            'name',
+            'educational_goal',
+        ]
+
+
+class ChooseCategoryCognitiveProcessForm(forms.Form):
+
+    name = forms.ChoiceField(
+        choices=[
+            (c.name, c.name)
+            for c in ChooseCategoryCognitiveProcess.objects.all()
+        ],
+        label='nome'
+    )
+    description = forms.CharField(
+        label='descrição',
+        widget=forms.Textarea
+    )
+
+
+class MaterialForm(forms.ModelForm):
+
+    class Meta:
+        model = Material
+        fields = [
+            'name',
+            'embedded',
+            'material_file',
+        ]
+
+
+class MaterialTRBForm(forms.ModelForm):
+
+    class Meta:
+        model = MaterialTRB
+        fields = [
+            'name',
+            'embedded',
+            'material_file',
         ]
 
 
