@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="splash">
+    <div class="pure-g-r">
+        <div class="pure-u-1">
+            <div class="l-box splash-text">
+                <h1 class="splash-head">
+                    {{ course.name }}
+                </h1>
+                <h2 class="splash-subhead">
+                    {{ course.description }}
+                </h2>
+                <p>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pure-g-r content-ribbon" id="contato">
+    <div class="pure-u-2-3">
+        <h3>Criar anúncio para turma do curso {{ request.course }}</h3>
+        {% if is_valid %}
+            <p>Seu anúncio foi criado com sucesso!</p>
+        {% endif %}
+        <form class="pure-form pure-form-aligned" method="post">
+        {% csrf_token %}
+            <fieldset>
+            {% for field in form %}
+                <div class="pure-control-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div>{{ field.help_text }}</div>
+                    {{ field.errors }}
+                </div>
+            {% endfor %}
+                <div class="pure-controls">
+                    <button type="submit" class="pure-button pure-button-primary">Enviar</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+{% endblock %}
