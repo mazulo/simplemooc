@@ -36,15 +36,36 @@ DATABASES = {
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
 )
+
+FILE_UPLOAD_HANDLERS = [
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler"
+]
 ````
 
 Criado o arquivo, você agora irá criar as tabelas no banco de dados, usando o seguinte comando:
 
 ````shell
-$ python manage.py syncdb
+$ python manage.py migrate
 ````
 
-Durante o comando, ele vai não só criar as tabelas, mas também criar um superusuário. Então, forneça as informações que ele pedir (não precisa ser um e-mail válido).
+Para criar os níveis "dimensão do conhecimento", rode o seguinte comando
+
+````shell
+$ python manage.py create_levels
+````
+
+E para criar os as categorias "dimensão do processo cognitivo", rode o seguinte comando
+
+````shell
+$ python manage.py create_categories
+````
+
+Crie também um superusuário. Então, forneça as informações que ele pedir (não precisa ser um e-mail válido).
+
+````shell
+$ python manage.py createsuperuser
+````
 
 Ao finalizar, basta rodar o servidor local, e acessar no seu navegador:
 
