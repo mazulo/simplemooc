@@ -1,6 +1,6 @@
 LEVELS = [
     {
-        'name': 'Nível A - Efetivo/Factual',
+        'name': 'Efetivo/Factual',
         'description': 'Este nível refere-se a fatos essenciais, terminologias,\
                         detalhes ou elementos relacionados ao conteúdo básico\
                         que o aluno deve dominar ou estar familiarizado a fim\
@@ -11,7 +11,7 @@ LEVELS = [
                         apresentados.'
     },
     {
-        'name': 'Nível B - Conceitual',
+        'name': 'Conceitual',
         'description': 'Elementos mais simples foram abordados e agora precisam\
                         ser conectados. Este nível é relacionado à\
                         inter-relação dos elementos básicos num contexto mais\
@@ -23,7 +23,7 @@ LEVELS = [
                         importante, mas a consciência de sua existência.'
     },
     {
-        'name': 'Nível C - Procedural',
+        'name': 'Procedural',
         'description': 'Neste momento, o conhecimento abstrato começa a ser\
                         estimulado "como realizar alguma coisa" utilizando\
                         critérios, métodos e técnicas. Este nível refere-se à\
@@ -35,7 +35,7 @@ LEVELS = [
                         procedimentos.'
     },
     {
-        'name': 'Nível D - Metacognitivo',
+        'name': 'Metacognitivo',
         'description': 'Reconhecimento da cognição em geral e da consciência\
                         da amplitude e profundidade de conhecimento adquirido\
                         sobre determinado conteúdo. Este conhecimento e\
