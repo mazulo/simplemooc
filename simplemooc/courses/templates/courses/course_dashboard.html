@@ -10,24 +10,49 @@
 	<li class="pure-menu-heading">
 		{{ course }}
 	</li>
-	<li>
-		<a href="{% url 'courses:lessons' course.slug %}">
-			<i class="fa fa-video-camera"></i>
-			Aulas e Materiais
-		</a>
-	</li>
+	{% if not user.is_professor %}
+		<li>
+			<a href="{% url 'courses:lessons' course.slug %}">
+				<i class="fa fa-video-camera"></i>
+				Aulas e Materiais
+			</a>
+		</li>
+	{% else %}
+		<li>
+			{% if course.is_normal_course %}
+				<a href="{% url 'courses:course' course.pk %}#lesson">
+					<i class="fa fa-video-camera"></i>
+					Aulas
+				</a>
+			{% else %}
+				<a href="{% url 'courses:course_trb' course.pk %}#lesson">
+					<i class="fa fa-video-camera"></i>
+					Aulas
+				</a>
+			{% endif %}
+		</li>
+	{% endif %}
 	<li>
 		<a href="#">
 			<i class="fa fa-info-circle"></i>
 			Informações
 		</a>
 	</li>
-	<li>
-		<a href="{% url 'courses:announcements' course.slug %}">
-			<i class="fa fa-envelope"></i>
-			Anúncios
-		</a>
-	</li>
+	{% if not user.is_professor %}
+		<li>
+			<a href="{% url 'courses:announcements' course.slug %}">
+				<i class="fa fa-envelope"></i>
+				Anúncios
+			</a>
+		</li>
+	{% else %}
+		<li>
+			<a href="{% url 'courses:list_announcements' course.slug %}">
+				<i class="fa fa-envelope"></i>
+				Anúncios
+			</a>
+		</li>
+	{% endif %}
 	<li>
 		<a href="{% url 'forum:index' %}">
 			<i class="fa fa-comments"></i>
