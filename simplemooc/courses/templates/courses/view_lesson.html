@@ -33,7 +33,7 @@
                             </td>
                             <td>
                                 {% if material.is_embedded %}
-                                    <a href="{% url 'courses:material' course.slug material.pk %}">
+                                    <a href="{% url 'courses:show_material_to_professor' course.slug material.pk %}">
                                         <i class"fa fa-video-camera"></i>
                                         Acessar
                                     </a>

@@ -33,10 +33,17 @@
 							</td>
 							<td>
 								{% if material.is_embedded %}
-									<a href="{% url 'courses:material' course.slug material.pk %}">
-										<i class"fa fa-video-camera"></i>
-										Acessar
-									</a>
+									{% if user.is_professor %}
+										<a href="{% url 'courses:show_material_to_professor' course.slug material.pk %}">
+											<i class"fa fa-video-camera"></i>
+											Acessar
+										</a>
+									{% else %}
+										<a href="{% url 'courses:material' course.slug material.pk %}">
+											<i class"fa fa-video-camera"></i>
+											Acessar
+										</a>
+									{% endif %}
 								{% elif material.material_file %}
 									<a href="{{ material.material_file.url }}">
 										<i class"fa fa-download"></i>
