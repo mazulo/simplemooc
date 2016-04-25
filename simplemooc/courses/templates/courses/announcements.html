@@ -1,12 +1,23 @@
 {% extends "courses/course_dashboard.html" %}
 
 {% block dashboard_content %}
+	{% if user.is_professor %}
+		<p>
+			<a  class="pure-button pure-button-primary" href="{% url 'courses:create_announcement' course.slug %}">Criar anúncio</a>
+		</p>
+	{% endif %}
 	{% for announcement in announcements %}
 		<div class="well">
 			<h2>
-				<a href="{% url 'courses:show_announcement' course.slug announcement.pk %}">
-					{{ announcement.title }}
-				</a>
+				{% if user.is_professor %}
+					<a href="{% url 'courses:show_announcement_to_professor' course.slug announcement.pk %}">
+						{{ announcement.title }}
+					</a>
+				{% else %}
+					<a href="{% url 'courses:show_announcement' course.slug announcement.pk %}">
+						{{ announcement.title }}
+					</a>
+				{% endif %}
 			</h2>
 			{{ announcement.content|linebreaks }}
 			<p>
@@ -21,4 +32,6 @@
 	{% empty %}
 		<h2>Sem anúncios</h2>
 	{% endfor %}
+	
+
 {% endblock dashboard_content %}
