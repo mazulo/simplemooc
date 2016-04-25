@@ -1,5 +1,11 @@
 from django.conf import settings
+from django.contrib.contenttypes.fields import (
+    GenericRelation,
+    GenericForeignKey,
+    ContentType
+)
 from django.db import models
+from django.utils import timezone
 
 from simplemooc.core.mail import send_mail_template
 
@@ -16,6 +22,17 @@ from .base_models.base import (
 
 class Course(BaseCourse):
 
+    enrollments = GenericRelation(
+        'Enrollment',
+        content_type_field='content_type',
+        object_id_field='object_id'
+    )
+    announcements = GenericRelation(
+        'Announcement',
+        content_type_field='content_type',
+        object_id_field='object_id'
+    )
+
     class Meta:
         verbose_name = 'curso'
         verbose_name_plural = 'cursos'
@@ -28,9 +45,24 @@ class Course(BaseCourse):
 
 class CourseTRB(BaseCourse):
 
+    enrollments = GenericRelation(
+        'Enrollment',
+        content_type_field='content_type',
+        object_id_field='object_id'
+    )
+    announcements = GenericRelation(
+        'Announcement',
+        content_type_field='content_type',
+        object_id_field='object_id'
+    )
+
     class Meta:
         verbose_name = 'curso Taxonomia Revisada de Bloom'
         verbose_name_plural = 'cursos Taxonomia Revisada de Bloom'
+
+    def release_lessons(self):
+        today = timezone.now().date()
+        return self.lessonstrb.filter(release_date__gte=today)
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -263,11 +295,9 @@ class Enrollment(models.Model):
         verbose_name='usuário',
         related_name='enrollments'
     )
-    course = models.ForeignKey(
-        Course,
-        verbose_name='curso',
-        related_name='enrollments'
-    )
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
     status = models.IntegerField(
         'situação',
         choices=STATUS_CHOICE,
@@ -284,21 +314,25 @@ class Enrollment(models.Model):
     def is_approved(self):
         return self.status == 1
 
+    @property
+    def course(self):
+        return self.content_object
+
     def __str__(self):
         return str(self.course)
 
     class Meta:
         verbose_name = 'inscrição'
         verbose_name_plural = 'inscrições'
-        unique_together = (('user', 'course'),)
+        unique_together = (('user', 'content_type', 'object_id'),)
 
 
 class Announcement(models.Model):
-    course = models.ForeignKey(
-        Course,
-        verbose_name='curso',
-        related_name='announcements'
-    )
+
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
     title = models.CharField(
         'título',
         max_length=100
@@ -312,6 +346,10 @@ class Announcement(models.Model):
         'atualizado em',
         auto_now=True
     )
+
+    @property
+    def course(self):
+        return self.content_object
 
     def __str__(self):
         return self.title
@@ -354,8 +392,10 @@ def post_save_announcement(instance, created, **kwargs):
         'announcement': instance,
     }
     template_name = 'courses/announcement_mail.html'
+    # import ipdb; ipdb.set_trace()
+    content_type = ContentType.objects.get_for_model(instance)
     enrollments = Enrollment.objects.filter(
-        course=instance.course, status=1
+        content_type=content_type, status=1
     )
     for enrollment in enrollments:
         recipient_list = [enrollment.user.email]
