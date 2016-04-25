@@ -4,6 +4,7 @@ from django.conf import settings
 from simplemooc.core.mail import send_mail_template
 
 from .models import (
+    Announcement,
     CategoryCognitiveProcess,
     ChooseCategoryCognitiveProcess,
     ChooseKnowledgeLevel,
@@ -19,6 +20,16 @@ from .models import (
     MaterialTRB,
 )
 from .custom_widgets import DateInputType
+
+
+class AnnouncementForm(forms.ModelForm):
+
+    class Meta:
+        model = Announcement
+        fields = [
+            'title',
+            'content',
+        ]
 
 
 class CourseForm(forms.ModelForm):
