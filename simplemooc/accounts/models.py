@@ -52,6 +52,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ['email']
 
     def __str__(self):
+        if self.is_professor:
+            return 'Professor {} '.format(self.name or self.username)
         return self.name or self.username
 
     def get_short_name(self):
