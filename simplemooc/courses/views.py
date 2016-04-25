@@ -1,4 +1,7 @@
+from itertools import chain
+
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 
 from django.shortcuts import (
     render,
@@ -8,6 +11,7 @@ from django.shortcuts import (
 from django.contrib.auth.decorators import login_required
 
 from simplemooc.courses.models import (
+    Announcement,
     CategoryCognitiveProcess,
     ChooseCategoryCognitiveProcess,
     ChooseKnowledgeLevel,
@@ -23,6 +27,7 @@ from simplemooc.courses.models import (
 )
 
 from simplemooc.courses.forms import (
+    AnnouncementForm,
     AssignKnowledgeLevelForm,
     ChooseCategoryCognitiveProcessForm,
     CommentForm,
@@ -36,12 +41,12 @@ from simplemooc.courses.forms import (
     MaterialTRBForm,
 )
 from .decorators import enrollment_required
-from .utils import format_name
+from .utils import format_name, get_course_by_instance
 
 
 def index(request):
     template_name = 'courses/index.html'
-    courses = Course.objects.all()
+    courses = list(chain(Course.objects.all(), CourseTRB.objects.all()))
     return render(request, template_name, {'courses': courses})
 
 
@@ -115,7 +120,7 @@ def edit_course(request, pk):
 def details(request, slug):
     template_name = 'courses/detail.html'
     context = {}
-    course = get_object_or_404(Course, slug=slug)
+    course = get_course_by_instance(slug, Course, CourseTRB)
     if request.method == 'POST':
         form = ContactCourse(request.POST)
         if form.is_valid():
@@ -468,10 +473,12 @@ def get_trb_table(request, c_pk, l_pk):
 
 @login_required
 def enrollment(request, slug):
-    course = get_object_or_404(Course, slug=slug)
+    course = get_course_by_instance(slug, Course, CourseTRB)
+    content_type = ContentType.objects.get_for_model(course)
     enrollment, created = Enrollment.objects.get_or_create(
         user=request.user,
-        course=course
+        content_type=content_type,
+        object_id=course.id,
     )
     if created:
         messages.success(request, 'Sua inscrição foi realizada com sucesso')
@@ -498,6 +505,65 @@ def undo_enrollment(request, slug):
         'course': course
     }
     return render(request, template, context)
+
+
+@login_required
+def create_announcement(request, course_slug):
+    context = {}
+    template_name = 'courses/create_announcement.html'
+    course = get_course_by_instance(course_slug, Course, CourseTRB)
+    content_type = ContentType.objects.get_for_model(course)
+
+    if request.method == 'POST':
+        form = AnnouncementForm(request.POST)
+        if form.is_valid():
+            Announcement.objects.create(
+                content_type=content_type,
+                object_id=course.id,
+                title=form.cleaned_data['title'],
+                content=form.cleaned_data['content'],
+            )
+            return redirect('courses:create_announcement', course.slug)
+    else:
+        form = AnnouncementForm()
+
+    context['course'] = course
+    context['form'] = form
+    return render(request, template_name, context)
+
+
+@login_required
+def list_announcements(request, course_slug):
+    template = 'courses/announcements.html'
+    course = get_course_by_instance(course_slug, Course, CourseTRB)
+    context = {
+        'course': course,
+        'announcements': course.announcements.all()
+    }
+    return render(request, template, context)
+
+
+@login_required
+def show_announcement_to_professor(request, course_slug, announcement_pk):
+    course = get_course_by_instance(course_slug, Course, CourseTRB)
+    announcement = get_object_or_404(
+        course.announcements.all(), pk=announcement_pk
+    )
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.announcement = announcement
+        comment.save()
+        messages.success(request, 'Seu comentário foi enviado com sucesso')
+        form = CommentForm()
+    template_name = 'courses/show_announcement.html'
+    context = {
+        'course': course,
+        'announcement': announcement,
+        'form': form
+    }
+    return render(request, template_name, context)
 
 
 @login_required
@@ -553,7 +619,10 @@ def lessons(request, slug):
 @enrollment_required
 def lesson(request, slug, pk):
     course = request.course
-    lesson = get_object_or_404(Lesson, pk=pk, course=course)
+    if isinstance(course, CourseTRB):
+        lesson = get_object_or_404(LessonTRB, pk=pk, course=course)
+    else:
+        lesson = get_object_or_404(Lesson, pk=pk, course=course)
     if not request.user.is_staff and not lesson.is_available():
         messages.error(request, 'Esta aula não está disponível')
         redirect('courses:lessons', slug=course.slug)
@@ -566,13 +635,44 @@ def lesson(request, slug, pk):
 
 
 @login_required
+def show_material_to_professor(request, course_slug, pk):
+    course = get_course_by_instance(course_slug, Course, CourseTRB)
+    try:
+        if isinstance(course, CourseTRB):
+            material = MaterialTRB.objects.get(pk=pk, lesson__course=course)
+        else:
+            material = Material.objects.get(
+                pk=pk, lesson__course=course
+            )
+    except (Material.DoesNotExist, MaterialTRB.DoesNotExist):
+        messages.error(request, 'Este material não está disponível')
+        redirect('courses:lessons', slug=course.slug)
+    lesson = material.lesson
+    if not material.is_embedded():
+        return redirect(material.material_file.url)
+    template = 'courses/material.html'
+    context = {
+        'course': course,
+        'lesson': lesson,
+        'material': material
+    }
+    return render(request, template, context)
+
+
+@login_required
 @enrollment_required
 def material(request, slug, pk):
     course = request.course
     try:
-        material = Material.objects.get(pk=pk, lesson__course=course)
-    except Material.ObjectDoesNotExist:
-        material = get_object_or_404(MaterialTRB, pk=pk, lesson__course=course)
+        if isinstance(course, CourseTRB):
+            material = MaterialTRB.objects.get(pk=pk, lesson__course=course)
+        else:
+            material = material = Material.objects.get(
+                pk=pk, lesson__course=course
+            )
+    except (Material.DoesNotExist, MaterialTRB.DoesNotExist):
+        messages.error(request, 'Este material não está disponível')
+        redirect('courses:lessons', slug=course.slug)
     lesson = material.lesson
     if not request.user.is_staff and not lesson.is_available():
         messages.error(request, 'Este material não está disponível')
