@@ -125,6 +125,16 @@ urlpatterns = [
         name='undo_enrollment'
     ),
     url(
+        r'^(?P<course_slug>[\w_-]+)/criar-anuncio/$',
+        views.create_announcement,
+        name='create_announcement'
+    ),
+    url(
+        r'^(?P<course_slug>[\w_-]+)/listar-anuncios/$',
+        views.list_announcements,
+        name='list_announcements'
+    ),
+    url(
         r'^(?P<slug>[\w_-]+)/anuncios/$',
         views.announcements,
         name='announcements'
@@ -135,6 +145,11 @@ urlpatterns = [
         name='show_announcement'
     ),
     url(
+        r'^(?P<course_slug>[\w_-]+)/anuncios-curso/(?P<announcement_pk>\d+)/$',
+        views.show_announcement_to_professor,
+        name='show_announcement_to_professor'
+    ),
+    url(
         r'^(?P<slug>[\w_-]+)/aulas/$',
         views.lessons,
         name='lessons'
@@ -143,6 +158,11 @@ urlpatterns = [
         r'^(?P<slug>[\w_-]+)/aulas/(?P<pk>\d+)/$',
         views.lesson,
         name='lesson'
+    ),
+    url(
+        r'^(?P<course_slug>[\w_-]+)/professor/materiais/(?P<pk>\d+)/$',
+        views.show_material_to_professor,
+        name='show_material_to_professor'
     ),
     url(
         r'^(?P<slug>[\w_-]+)/materiais/(?P<pk>\d+)/$',
