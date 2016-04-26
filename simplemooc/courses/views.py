@@ -52,9 +52,13 @@ def index(request):
 
 @login_required
 def list_courses_trb(request):
+    user = request.user
     template_name = 'courses/list_courses.html'
     context = {}
-    courses = CourseTRB.objects.all()
+    if user.is_professor:
+        courses = user.professor.courses_coursetrb_courses.all()
+    else:
+        courses = CourseTRB.objects.all()
     context['courses'] = courses
     context['is_trb'] = True
     return render(request, template_name, context)
@@ -62,9 +66,13 @@ def list_courses_trb(request):
 
 @login_required
 def list_courses_normal(request):
+    user = request.user
     template_name = 'courses/list_courses.html'
     context = {}
-    courses = Course.objects.all()
+    if user.is_professor:
+        courses = user.professor.courses_course_courses.all()
+    else:
+        courses = Course.objects.all()
     context['courses'] = courses
     context['is_trb'] = False
     return render(request, template_name, context)
