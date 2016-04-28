@@ -9,6 +9,12 @@
             {% endif %}
         </summary>
         <p>
+            <p>Adicionar material</p>
+            {% if course.is_normal_course %}
+                <a href="{% url 'courses:create_material_lesson' course.pk lesson.pk %}" class="pure-button">Adicionar</a>
+            {% else %}
+                <a href="{% url 'courses:create_material_lesson_trb' course.pk lesson.pk %}" class="pure-button">Adicionar</a>
+            {% endif %}
             <p>{{ lesson.description }}</p>
             {% if not is_normal_course %}
                 <ul>
