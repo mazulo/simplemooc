@@ -3,7 +3,7 @@ simplemooc
 
 Projeto do curso [Python na Web com Django (Python 3)](http://pycursos.com/django/), ministrado pelo [Gileno Filho](https://github.com/gileno).
 
-Como o nome do curso já indica, este projeto foi desenvolvido usando Python 3, e django na sua versão 1.6.
+Como o nome do curso já indica, este projeto foi desenvolvido usando Python 3, e django na sua versão 1.6. Porém após a atualização para a versão mais recente LTS, o projeto usa django 1.8.x.
 
 Para preparar sua máquina para rodar o projeto vai ser bem simples.
 
