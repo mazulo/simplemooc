@@ -73,7 +73,7 @@ class BaseCourse(models.Model):
 
 class BaseLesson(models.Model):
     name = models.CharField(
-        'nome',
+        'informar conteúdo',
         max_length=100
     )
     description = models.TextField(
