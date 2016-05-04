@@ -30,9 +30,11 @@ from simplemooc.courses.forms import (
     AnnouncementForm,
     AssignKnowledgeLevelForm,
     ChooseCategoryCognitiveProcessForm,
+    CategoryDCPForm,
     CommentForm,
     ContactCourse,
     CourseRequestForm,
+    KnowledgeLevelForm,
     LessonTRBForm,
     LessonForm,
     VerbForm,
@@ -380,10 +382,9 @@ def add_category_cognitive(request, c_pk, l_pk, n_pk):
             if request.POST['name'] == cat['name']:
                 cat_description['description'] = cat['description']
         request.POST = request.POST.copy()
-        request.POST.update(cat_description)
-        form = ChooseCategoryCognitiveProcessForm(request.POST)
+        request.POST['description'] = cat_description['description']
+        form = CategoryDCPForm(request.POST)
         if form.is_valid():
-            import ipdb; ipdb.set_trace()
             CategoryCognitiveProcess.objects.create(
                 name=form.cleaned_data.get('name'),
                 description=form.cleaned_data.get('description'),
@@ -438,7 +439,7 @@ def add_knowledge_level(request, pk, lesson_pk):
                 lev_description['description'] = lev['description']
         request.POST = request.POST.copy()
         request.POST.update(lev_description)
-        form = AssignKnowledgeLevelForm(request.POST)
+        form = KnowledgeLevelForm(request.POST)
         if form.is_valid():
             # import ipdb; ipdb.set_trace()
             KnowledgeLevel.objects.create(
