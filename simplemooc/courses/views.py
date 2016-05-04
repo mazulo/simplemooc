@@ -40,6 +40,10 @@ from simplemooc.courses.forms import (
     MaterialForm,
     MaterialTRBForm,
 )
+
+from .management.commands._categories import CATEGORIES
+from .management.commands._levels import LEVELS
+
 from .decorators import enrollment_required
 from .utils import format_name, get_course_by_instance
 
@@ -370,10 +374,16 @@ def add_category_cognitive(request, c_pk, l_pk, n_pk):
     course = get_object_or_404(CourseTRB, pk=c_pk)
     lesson = get_object_or_404(LessonTRB, pk=l_pk)
     level = get_object_or_404(KnowledgeLevel, pk=n_pk)
-
+    cat_description = {}
     if request.method == 'POST':
+        for cat in CATEGORIES:
+            if request.POST['name'] == cat['name']:
+                cat_description['description'] = cat['description']
+        request.POST = request.POST.copy()
+        request.POST.update(cat_description)
         form = ChooseCategoryCognitiveProcessForm(request.POST)
         if form.is_valid():
+            import ipdb; ipdb.set_trace()
             CategoryCognitiveProcess.objects.create(
                 name=form.cleaned_data.get('name'),
                 description=form.cleaned_data.get('description'),
@@ -420,8 +430,14 @@ def add_knowledge_level(request, pk, lesson_pk):
 
     lesson = get_object_or_404(LessonTRB, pk=lesson_pk)
     course = get_object_or_404(CourseTRB, pk=pk)
+    lev_description = {}
 
     if request.method == 'POST':
+        for lev in LEVELS:
+            if request.POST['name'] == lev['name']:
+                lev_description['description'] = lev['description']
+        request.POST = request.POST.copy()
+        request.POST.update(lev_description)
         form = AssignKnowledgeLevelForm(request.POST)
         if form.is_valid():
             # import ipdb; ipdb.set_trace()
