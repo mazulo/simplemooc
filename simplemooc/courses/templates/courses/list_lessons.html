@@ -39,7 +39,7 @@
                                         {% with categories=level.categories_dimension.all  %}
                                             <p>
                                                 <strong>Categorias do processo cognitivo</strong>
-                                                | <a href="{% url 'courses:add_category_cognitive' course.pk lesson.pk level.pk %}">Adicionar nova categoria</a>
+                                                | <a href="{% url 'courses:add_category_cognitive' course.pk lesson.pk level.pk %}">Adicionar objetivo educacional para essa aula e para esse nível de conteúdo trabalhado</a>
                                             </p>
                                             {% if categories %}
                                                 {% for category in categories %}
@@ -74,7 +74,7 @@
                                                             {% else %}
                                                                 <p>
                                                                     Nenhum verbo relacionado.
-                                                                    <a href="{% url 'courses:add_verb_description' course.pk lesson.pk category.pk %}">Cadastrar verbo</a>
+                                                                    <a href="{% url 'courses:add_verb_description' course.pk lesson.pk category.pk %}">Cadastrar descrição do objetivo educacional</a>
                                                                 </p>
                                                             {% endif %}
                                                         {% endwith %}
