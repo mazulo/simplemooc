@@ -92,7 +92,7 @@ class LessonTRBForm(forms.ModelForm):
 
     levels = forms.ModelMultipleChoiceField(
         queryset=ChooseKnowledgeLevel.objects.all(),
-        label='níveis de conhecimento',
+        label='nível em que o conteúdo será trabalhado',
         help_text='para selecionar mais de 1, segure ctrl e clique no item'
     )
 
@@ -123,10 +123,6 @@ class AssignKnowledgeLevelForm(forms.Form):
     name = forms.ChoiceField(
         choices=[(c.name, c.name) for c in ChooseKnowledgeLevel.objects.all()],
         label='nome'
-    )
-    description = forms.CharField(
-        label='descrição',
-        widget=forms.Textarea
     )
 
 
@@ -175,11 +171,6 @@ class ChooseCategoryCognitiveProcessForm(forms.Form):
             for c in ChooseCategoryCognitiveProcess.objects.all()
         ],
         label='nome'
-    )
-    description = forms.CharField(
-        label='descrição',
-        widget=forms.Textarea,
-        required=False
     )
 
 
