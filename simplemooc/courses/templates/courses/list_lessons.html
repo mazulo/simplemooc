@@ -36,7 +36,7 @@
                                         {% endif %}
                                     </li>
                                     <ul>
-                                        {% with categories=lesson.categories_dimension.all  %}
+                                        {% with categories=level.categories_dimension.all  %}
                                             <p>
                                                 <strong>Categorias do processo cognitivo</strong>
                                                 | <a href="{% url 'courses:add_category_cognitive' course.pk lesson.pk level.pk %}">Adicionar nova categoria</a>
