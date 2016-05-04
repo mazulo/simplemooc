@@ -178,7 +178,8 @@ class ChooseCategoryCognitiveProcessForm(forms.Form):
     )
     description = forms.CharField(
         label='descrição',
-        widget=forms.Textarea
+        widget=forms.Textarea,
+        required=False
     )
 
 
