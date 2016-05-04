@@ -18,7 +18,7 @@
     </div>
 </div>
 <div class="pure-g-r content-ribbon" id="contato">
-    <div class="pure-u-2-3">
+    <div class="pure-u-2-5">
         <h3>Cadastre uma categoria do processo cognitivo</h3>
         {% if messages %}
             <p>
@@ -41,23 +41,21 @@
             </fieldset>
         </form>
     </div>
-    <div class="pure-u-1-3">
+    <div class="pure-u-3-5">
         <div class="l-box">
             <h4 class="content-subhead">Descrição Categoria Processo Cognitivo</h4>
         </div>
-        <div class="l-box">
-            <ul>
-                {% for category in categories %}
-                    <li>
-                        <p>{{ category }}</p>
-                        <ul>
-                            <li>
-                                {{ category.description }}
-                            </li>
-                        </ul>
-                    </li>
-                {% endfor %}
-            </ul>
+        <div class="l-box wrapper-content-info">
+            <table>
+                <tr>
+                    {% for category in categories %}
+                        <td>
+                            <h4>{{ category }}</h4>
+                            <a class="open" href="#" title="{{ category.description }}">ler descrição</a>
+                        </td>
+                    {% endfor %}
+                </tr>
+            </table>
         </div>
     </div>
 </div>
