@@ -48,7 +48,7 @@
                 <tr>
                     {% for level in levels %}
                         <td>
-                            <h4>{{ level }}</h4>
+                            <h4>Nível {{ forloop.counter }}</h4>
                             <a class="open" href="#" title="{{ level.description }}">ler descrição</a>
                         </td>
                     {% endfor %}
